@@ -1,0 +1,9 @@
+#!/bin/bash
+
+speedtotal=0; avg_rate=0;n=1
+for i in $(awk '{print $7}' download_rate.out); do
+speedtotal=`awk -v speed=$i -v speedtotal=$speedtotal 'BEGIN{speedtotal=(speedtotal+speed); print speedtotal}'`
+avg_rate=`awk -v speedtotal=$speedtotal -v n=$n 'BEGIN{print speedtotal/n}'`
+echo $avg_rate
+let n=n+1
+done

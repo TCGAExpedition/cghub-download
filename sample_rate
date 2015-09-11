@@ -1,0 +1,22 @@
+#!/bin/bash
+if [[ $# -eq 1 ]]; then
+	sleep_t=$1
+	while [[ 1 ]]; do
+		speed=0;speedtotal=0; 
+		for i in gtdownload*.tsv.log; do
+			speed=`tail -n 1 $i | awk '{if ($12 == "MB/s") print $11; else if ($12 == "kB/s") print $11 / 1000; else print 0}'`
+			speedtotal=`awk -v speed=$speed -v speedtotal=$speedtotal 'BEGIN{ speedtotal = speed + speedtotal; print speedtotal}'`
+		done
+		echo `date` "$speedtotal MB/s" >> download_rate.out
+		sleep $sleep_t
+	done
+else
+        speed=0;speedtotal=0; 
+	for i in gtdownload*.tsv.log; do
+		speed=`tail -n 1 $i | awk '{if ($12 == "MB/s") print $11; else if ($12 == "kB/s") print $11 / 1000; else print 0}'`
+		speedtotal=`awk -v speed=$speed -v speedtotal=$speedtotal 'BEGIN{ speedtotal = speed + speedtotal; print speedtotal}'`
+	echo "$speed MB/s"
+	done
+	echo "$speedtotal MB/s"
+fi
+
