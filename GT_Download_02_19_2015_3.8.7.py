@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#!/usr/bin/env python
 #
 # Author   : Antonio M. Ferreira, PhD
 #            Center for Simulation and Modeling
@@ -23,8 +22,10 @@ import getopt
 import subprocess
 from datetime import datetime
 
+null_storage = 0
 verbose     = 0
 gt_debug    = 0
+# using Mebibyte (1024^2 bytes) and Gibibyte (1024^3 bytes)
 Bytes2MB    = 1048576
 Bytes2GB    = 1073741824
 TimeFormat  = '%m/%d/%y %I:%M %p'
@@ -65,7 +66,7 @@ if debug:
 
 # Parse the command line options
 options, trailing_opts = getopt.getopt(sys.argv[1:],
-                                      'e:q:C:w:t:b:d:l:n:vhD', [])
+                                      'e:q:C:w:t:b:d:l:n:NvhD', [])
 
 
 class BAMinfo:
@@ -218,6 +219,8 @@ for opt, arg in options:
         direct_mode = 0
     elif opt == '-S':
         do_speedtest = 1
+    elif opt == '-N':
+        null_storage = 1
     elif opt == '-v':
         verbose = 1
     elif opt == '-h':
@@ -368,6 +371,8 @@ for bam in SourceList:
     # Create the gtdownload command
     gt_command = "%s" % GeneTorrentExecutable
     gt_command += " -t"             # Timestamp log messages
+    if null_storage:
+        gt_command += " --null-storage"
     if verbose:
         gt_command += " -v"
     if gt_debug:
@@ -422,7 +427,7 @@ for bam in SourceList:
     start_time = datetime.now()
     do_download=1
     attempt=0
-    MAX_ATTEMPTS=5
+    MAX_ATTEMPTS=2
 
     # If the status is Cached, Staged, Finished, or Live, skip this step
     if (bam.status == "Cached" or bam.status == "Staged" or bam.status == "Finished" or bam.status == "Live"):
@@ -519,18 +524,19 @@ for bam in SourceList:
                         UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
                                            column_names.index('end_time'),\
                                            bam.end_time.strftime(TimeFormat))
-                        if direct_mode:
-                            bam.size = os.path.getsize(os.path.dirname(final_location) + \
-                                                       "/" + bam.uuid + "/" + bam.name)
-                            total_download_size += bam.size
-                            if debug:
-                                print ("DEBUG: Getting size of %s (%d)") % (os.path.dirname(final_location) + \
-                                                       "/" + bam.uuid + "/" + bam.name, bam.size)
-                        else:
-                            if debug:
-                                print ("DEBUG: Getting size of %s") % cached_name
-                            bam.size = os.path.getsize(cached_name)
-                            total_download_size += bam.size
+                        if not null_storage:
+                            if direct_mode:
+                                bam.size = os.path.getsize(os.path.dirname(final_location) + \
+                                                           "/" + bam.uuid + "/" + bam.name)
+                                total_download_size += bam.size
+                                if debug:
+                                    print ("DEBUG: Getting size of %s (%d)") % (os.path.dirname(final_location) + \
+                                                           "/" + bam.uuid + "/" + bam.name, bam.size)
+                            else:
+                                if debug:
+                                    print ("DEBUG: Getting size of %s") % cached_name
+                                bam.size = os.path.getsize(cached_name)
+                                total_download_size += bam.size
                         UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
                                            column_names.index('files_size'),\
                                            str(bam.size))
@@ -571,7 +577,7 @@ for bam in SourceList:
     sys.stdout.flush()
 
     # Clean up the .gto file
-    if not (bam.status == "Failed" or bam.status == "suppressed"):
+    if not (bam.status == "Failed" or bam.status == "suppressed" or null_storage == 1):
         if direct_mode:
             os.remove(direct_mode_path + "/" + bam.uuid + ".gto")
         else:
@@ -768,10 +774,15 @@ print ("------------------------")
 print ("%.2f GB total") % (float(total_download_size)/float(Bytes2GB))
 
 end_time = datetime.now()
-elapsed_time = (end_time - script_start_time).seconds
-(elapsed_days,elapsed_hours) = divmod(elapsed_time,(3600 * 24))
-(elapsed_hours,elapsed_minutes) = divmod(elapsed_hours,3600)
+elapsed_time = end_time - script_start_time
+elapsed_days, elapsed_seconds  = elapsed_time.days, elapsed_time.seconds
+total_seconds = elapsed_days*24*3600 + elapsed_seconds
+(elapsed_hours,elapsed_minutes) = divmod(elapsed_seconds,3600)
 (elapsed_minutes,elapsed_seconds) = divmod(elapsed_minutes,60)
 print ("\nTotal walltime for GT_Download           = %d days %2d hours %2d minutes %4.1f seconds") % \
       (elapsed_days,elapsed_hours,elapsed_minutes,elapsed_seconds)
+
+if total_download_size > 0:
+    print ("\nDownload Rate           = %4.1f MiB/s") % \
+        (float(total_download_size)/(float(Bytes2MB)*float(total_seconds)))
 print ("====================================================================================\n")
