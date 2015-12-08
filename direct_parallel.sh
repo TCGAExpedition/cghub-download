@@ -12,7 +12,7 @@ script_dir=`pwd`
 threads=1
 cd $requests_dir
 
-for requests_file in $( ls $requests_file_stub.x[0-9][0-9].tsv ); do
+for requests_file in $requests_file_stub.x[0-9][0-9].tsv; do
 python $script_dir/$python_script -v -n "$threads" -t "$final_dir" -C "$key_file" -d "$requests_dir" $requests_file >> $script_dir/$log_file.$requests_file.log &
 done
 wait
