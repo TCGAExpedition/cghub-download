@@ -1,13 +1,5 @@
-# Starting a fresh download
-cd /supercell/bam_gt/active_downloads
-rm -f *.log
-rm -rf /supercell/tcga_downloads/coad
-rm -f /supercell/bam_requests/active_downloads/bam_status_COAD_WGS.x*.tsv
-./direct_parallel_prep.sh
-./direct_parallel.sh &
-
-# stopping and restarting a partial download
-killall gtdownload; killall python
-# check to make sure all gtdownload and python processes are stopped
-./direct_parallel.sh &
+# Starting a fresh CGHub download with cghub_download.sh
+1. Copy cghub_download.sh, direct_parallel_prep.sh, and direct_parallel.sh to your working directory.
+2. Edit the paths at the top of cghub_download.sh.
+3. ./cghub_download.sh <full path to dir w/ CGHub TSV files> < # GeneTorrent instances> < # threads per instance>
 
