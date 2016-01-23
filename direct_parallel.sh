@@ -4,9 +4,9 @@ python_script=$1
 final_dir=$2
 key_file=$3
 script_dir=$4
-requests_dir=$5
-tsv=$6
-threads=$7
+requests_dir=$4
+tsv=$5
+threads=$6
 
 # extract tsv file name from full path
 local_tsv=`echo $tsv | awk -F "/" '{print $NF}'`
