@@ -2,7 +2,7 @@
 
 #DEFAULT VARIABLES
 export TMPDIR=/local/tmp
-python_script=GT_Download_02_19_2015_3.8.7.py
+python_script=GT_Download.py
 
 path=/supercell2
 final_dir=$path/tcga_downloads
