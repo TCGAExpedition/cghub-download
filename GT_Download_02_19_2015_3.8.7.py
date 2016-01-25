@@ -720,38 +720,6 @@ for bam in SourceList:
         print ("====================================================================================\n\n")
         sys.stdout.flush()
 
-    # Prune the directory tree to remove any empty directories if something failed
-    # NOTE: Olga requested this behavior
-
-    # NOTE from pdblood: This feature no longer needed, since we are only moving successful downloads to final /supercell/tcga destination
-    # Plus, this feature does not take into account multiple concurrent GT instances, which causes problems
-
-    # if not (bam.status == "Finished" or bam.status == "Staged"):
-    #     if debug:
-    #         print ("DEBUG: Problem with download of %s (status=%s)") % (bam.uuid,bam.status)
-    #         print ("DEBUG: Checking for empty directories in %s") % final_dest
-    #     done = 0
-    #     while not done:
-    #         empty_dirs = list()
-    #         dirinfo = os.walk(final_dest)
-    #         for current_dir in dirinfo:
-    #             numdirs  = len(current_dir[1])
-    #             numfiles = len(current_dir[2])
-    #             if numdirs == 0 and numfiles == 0:
-    #                 empty_dirs.append(current_dir[0])
-    #         if len(empty_dirs) == 0:
-    #             done = 1
-    #         else:
-    #             if debug:
-    #                 print ("DEBUG: Empty directory list:")
-    #                 for i in empty_dirs:
-    #                     print ("DEBUG: ----> %s") % i
-    #             for empty_path in empty_dirs:
-    #                 import shutil
-    #                 if debug:
-    #                     print ("DEBUG: Removing empty directory %s") % empty_path
-    #                 shutil.rmtree(empty_path)
-
 # Print some summary output
 StatusList = list()
 for bam in SourceList:
