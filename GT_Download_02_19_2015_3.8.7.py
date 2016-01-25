@@ -1,18 +1,17 @@
 #!/usr/bin/env python
 #
-# Author   : Antonio M. Ferreira, PhD
-#            Center for Simulation and Modeling
-#            University of Pittsburgh
-# Date     : 22 Aug 14
-# Modified : 19 Feb 15
+# Authors   : Antonio M. Ferreira, PhD
+#             Center for Simulation and Modeling
+#             University of Pittsburgh
+#
+#             Philip D. Blood
+#             Pittsburgh Supercomputing Center
+#
 # Now moved to github
 #
 # Things to do:
 #
-#  1) In direct mode, make limiting the download speed to disk speed optional
-#  2) Make the disk speed check a function and call it periodically to adjust
-#     for I/O load
-#  3) Build in logic for handling more than one file per CGHub UUID
+#  Build in logic for handling more than one file per CGHub UUID (on Tony's list - still needed?)
 #
 
 import time
@@ -20,6 +19,7 @@ import sys
 import os
 import getopt
 import subprocess
+import shutil
 from datetime import datetime
 
 null_storage = 0
