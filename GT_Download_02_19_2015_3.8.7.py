@@ -557,6 +557,11 @@ for bam in SourceList:
                 print ("\nERROR: Download process failed with exit code %d.  Retrying.  (Attempt %d of %d)\n\n") % \
                       (gt_process.returncode,(attempt+1),MAX_ATTEMPTS)
                 sys.stdout.flush()
+                # remove partial download files created by gtdownload...
+                # ...as resuming downloads with gtdownload can be slow and unreliable
+                os.remove(os.path.dirname(final_location) + "/" + bam.uuid + ".gto")
+                shutil.rmtree(os.path.dirname(final_location) + "/" + bam.uuid + ".partial")
+
                 bam.end_time = datetime.now()
                 UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
                                    column_names.index('end_time'),\
