@@ -502,66 +502,71 @@ for bam in SourceList:
             # A little user output for the log file
         while (gt_process.poll()  == None):
             out = gt_process.stdout.readline()
-            if out == '':
-                if gt_process.poll() != None:
-                    if debug:
-                        print ("DEBUG: gt_process.poll() != None, the gtdownload process has terminated")
-                        sys.stdout.flush()
-                    if direct_mode:
-                        cached_name = final_dest
-                    else:
-                        cached_name = "%s/%s/%s" % (local_dir,bam.uuid,bam.name)
-                    if debug:
-                        print ("DEUBG: cached_name                 = %s") % cached_name
-                        print ("DEBUG: os.path.exists(cached_name) = %d") % os.path.exists(cached_name)
-                        print ("DEBUG: gt_process.returncode       = %d") % gt_process.returncode
-                        sys.stdout.flush()
-                    if (gt_process.returncode == 0 and os.path.exists(cached_name)):
-                        if debug:
-                            print ("DEBUG: The gtdownload process terminated normally and the file exists on disk")
-                        do_download = 0
-                        bam.end_time = datetime.now()
-                        UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
-                                           column_names.index('end_time'),\
-                                           bam.end_time.strftime(TimeFormat))
-                        if not null_storage:
-                            if direct_mode:
-                                bam.size = os.path.getsize(os.path.dirname(final_location) + \
-                                                           "/" + bam.uuid + "/" + bam.name)
-                                total_download_size += bam.size
-                                if debug:
-                                    print ("DEBUG: Getting size of %s (%d)") % (os.path.dirname(final_location) + \
-                                                           "/" + bam.uuid + "/" + bam.name, bam.size)
-                            else:
-                                if debug:
-                                    print ("DEBUG: Getting size of %s") % cached_name
-                                bam.size = os.path.getsize(cached_name)
-                                total_download_size += bam.size
-                        UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
-                                           column_names.index('files_size'),\
-                                           str(bam.size))
-                        if direct_mode:
-                            bam.status = "Finished"
-                        else:
-                            bam.status = "Cached"
-                        UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
-                                           column_names.index('status'),\
-                                           bam.status)
-                        break
-                    else:
-                        print ("\nERROR: Download process failed with exit code %d.  Retrying.  (Attempt %d of %d)\n\n") % \
-                              (gt_process.returncode,(attempt+1),MAX_ATTEMPTS)
-                        bam.end_time = datetime.now()
-                        UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
-                                           column_names.index('end_time'),\
-                                           bam.end_time.strftime(TimeFormat))
-                        bam.status = "Failed"
-                        UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
-                                           column_names.index('status'),\
-                                           bam.status)
-            else:
+            if out != '':
                 sys.stdout.write(">>>>>> " + out)
                 sys.stdout.flush()
+
+        if gt_process.poll() != None:
+            if debug:
+                print ("DEBUG: gt_process.poll() != None, the gtdownload process has terminated")
+                sys.stdout.flush()
+            if direct_mode:
+                cached_name = final_dest
+            else:
+                cached_name = "%s/%s/%s" % (local_dir,bam.uuid,bam.name)
+            if debug:
+                print ("DEUBG: cached_name                 = %s") % cached_name
+                print ("DEBUG: os.path.exists(cached_name) = %d") % os.path.exists(cached_name)
+                print ("DEBUG: gt_process.returncode       = %d") % gt_process.returncode
+                sys.stdout.flush()
+            if (gt_process.returncode == 0 and os.path.exists(cached_name)):
+                if debug:
+                    print ("DEBUG: The gtdownload process terminated normally and the file exists on disk")
+                    sys.stdout.flush()
+                do_download = 0
+                bam.end_time = datetime.now()
+                UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
+                                   column_names.index('end_time'),\
+                                   bam.end_time.strftime(TimeFormat))
+                if not null_storage:
+                    if direct_mode:
+                        bam.size = os.path.getsize(os.path.dirname(final_location) + \
+                                                   "/" + bam.uuid + "/" + bam.name)
+                        total_download_size += bam.size
+                        if debug:
+                            print ("DEBUG: Getting size of %s (%d)") % (os.path.dirname(final_location) + \
+                                                   "/" + bam.uuid + "/" + bam.name, bam.size)
+                            sys.stdout.flush()
+                    else:
+                        if debug:
+                            print ("DEBUG: Getting size of %s") % cached_name
+                            sys.stdout.flush()
+                        bam.size = os.path.getsize(cached_name)
+                        total_download_size += bam.size
+                UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
+                                   column_names.index('files_size'),\
+                                   str(bam.size))
+                if direct_mode:
+                    bam.status = "Finished"
+                else:
+                    bam.status = "Cached"
+                UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
+                                   column_names.index('status'),\
+                                   bam.status)            
+            else:
+                print ("\nERROR: Download process failed with exit code %d.  Retrying.  (Attempt %d of %d)\n\n") % \
+                      (gt_process.returncode,(attempt+1),MAX_ATTEMPTS)
+                sys.stdout.flush()
+                bam.end_time = datetime.now()
+                UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
+                                   column_names.index('end_time'),\
+                                   bam.end_time.strftime(TimeFormat))
+                bam.status = "Failed"
+                UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\
+                                   column_names.index('status'),\
+                                   bam.status)
+
+
 
     # A little user output for the log file
     print (" --- Finished download at %s") % (bam.end_time.strftime(TimeFormat))
