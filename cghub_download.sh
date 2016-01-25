@@ -52,6 +52,7 @@ while read tsv; do
 	for i in ${requests_file_stub}.x*.tsv ; do
 	    ./delete_failed_inprocess.py $i $final_dir
 	done
+	restart="false"
     else
 	./direct_parallel_prep.sh $bam_request_active $tsv $gt_instances
     fi
