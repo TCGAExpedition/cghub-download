@@ -50,7 +50,7 @@ while read tsv; do
     cd $bam_request_active    
     if [[ "$restart" == "true" ]]; then
 	for i in ${requests_file_stub}.x*.tsv ; do
-	    ./delete_failed_inprocess.py $i
+	    ./delete_failed_inprocess.py $i $final_dir
 	done
     else
 	./direct_parallel_prep.sh $bam_request_active $tsv $gt_instances
