@@ -559,8 +559,11 @@ for bam in SourceList:
                 sys.stdout.flush()
                 # remove partial download files created by gtdownload...
                 # ...as resuming downloads with gtdownload can be slow and unreliable
-                os.remove(os.path.dirname(final_location) + "/" + bam.uuid + ".gto")
-                shutil.rmtree(os.path.dirname(final_location) + "/" + bam.uuid + ".partial")
+                
+                if os.path.exists(os.path.dirname(final_location) + "/" + bam.uuid + ".gto"):
+                    os.remove(os.path.dirname(final_location) + "/" + bam.uuid + ".gto")
+                if os.path.isdir(os.path.dirname(final_location) + "/" + bam.uuid + ".partial"):    
+                    shutil.rmtree(os.path.dirname(final_location) + "/" + bam.uuid + ".partial")
 
                 bam.end_time = datetime.now()
                 UpdateRequestsFile(RequestsFileName,column_names.index('analysis_id'),bam.uuid,num_columns,\

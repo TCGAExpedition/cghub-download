@@ -31,5 +31,9 @@ with open(filename, 'rb') as fh:
             pgrr_file_path = row[2].lower() + '/' + row[1][:12] + '/' + row[1][:15] + '/' + row[7] + '/CGHub_' + row[11] + '/' + row[16]
             path =  directory + '/' + pgrr_file_path
             print "Paths to remove if present: " + path
-            os.remove(path + ".gto")
-            shutil.rmtree(path + ".partial")
+            if os.path.exists(path + ".gto"):
+                print "removing " + path + ".gto"
+                os.remove(path + ".gto")
+            if os.path.isdir(path + ".partial"):
+                shutil.rmtree(path + ".partial")
+                print "removing " + path + ".partial"
