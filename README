@@ -1,5 +1,8 @@
 # Starting a fresh CGHub download with cghub_download.sh
+
 1. Copy cghub_download.sh, direct_parallel_prep.sh, and direct_parallel.sh to your working directory.
-2. Edit the paths at the top of cghub_download.sh.
-3. ./cghub_download.sh <full path to dir w/ CGHub TSV files> < # GeneTorrent instances> < # threads per instance>
+
+2. Edit the paths at the top of cghub_download.sh or modify with commandline options.
+
+3. cghub_download.sh [options] </full/path/CGHub/TSVfile/dir> < # GeneTorrent instances> < # threads per instance>
 
