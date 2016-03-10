@@ -1,9 +1,11 @@
 #!/bin/bash
-
+# average the last n download rate entries of the file produced by the sample_rate script
+file=$1
+tot=$2  
 speedtotal=0; avg_rate=0;n=1
-for i in $(awk '{print $7}' download_rate.out | tail -n $1); do
-speedtotal=`awk -v speed=$i -v speedtotal=$speedtotal 'BEGIN{speedtotal=(speedtotal+speed); print speedtotal}'`
-avg_rate=`awk -v speedtotal=$speedtotal -v n=$n 'BEGIN{print speedtotal/n}'`
-echo $avg_rate
-let n=n+1
+for i in $(awk '{print $7}' $file | tail -n $tot); do
+    speedtotal=`awk -v speed=$i -v speedtotal=$speedtotal 'BEGIN{speedtotal=(speedtotal+speed); print speedtotal}'`
+    avg_rate=`awk -v speedtotal=$speedtotal -v n=$n 'BEGIN{print speedtotal/n}'`
+    echo $avg_rate
+    let n=n+1
 done
